@@ -51,7 +51,7 @@ actionlint:
 	docker run --rm -v "$(CURDIR):/repo" -w /repo $(ACTIONLINT) -color=false .github/workflows/*.yml
 
 scan: image
-	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache $(TRIVY) image --quiet --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed $(IMAGE)
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache -v $(CURDIR)/trivy-secret.yaml:/trivy-secret.yaml:ro $(TRIVY) image --secret-config /trivy-secret.yaml --quiet --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed $(IMAGE)
 
 local-deploy:
 	$(MAKE) --no-print-directory up && $(MAKE) --no-print-directory smoke; status=$$?; $(MAKE) --no-print-directory down; exit $$status
