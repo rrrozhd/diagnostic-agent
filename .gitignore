@@ -6,3 +6,7 @@ node_modules/
 frontend/dist/
 chroma/
 .DS_Store
+
+# Downloaded datasets (re-fetch with: bash data/fetch.sh)
+data/*/
+data/reference.db*
