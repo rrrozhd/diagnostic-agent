@@ -7,11 +7,11 @@
 # "rule out" is left alone because it is how hedged text reads ("would help rule out",
 # "to rule out", "cannot rule out"). "ruled out" and "confirmed" are allowed after hedging or
 # negating words (be, not, not been, yet, until, if, once, unless), so "cannot be ruled out" and
-# "has not been confirmed" pass while "has been ruled out" and "was confirmed" hit.
+# "has not been confirmed" pass while "has been ruled out" and "was confirmed" hit. Hyphenated terms like "laboratory-confirmed" pass.
 # "the patient has" is allowed when it restates history ("has a history of", "has no", "has known").
 \bthe\s+(final\s+|definitive\s+)?diagnosis\s+is\b(?!\s+(not|uncertain|unclear|undetermined)\b)
 \bconfirms\b
-(?<!\bbe\s)(?<!\bnot\s)(?<!\bnot\sbeen\s)(?<!n't\sbeen\s)(?<!\byet\s)(?<!\buntil\s)(?<!\bif\s)(?<!\bonce\s)(?<!\bunless\s)\bconfirmed\b
+(?<!\bbe\s)(?<!\bnot\s)(?<!\bnot\sbeen\s)(?<!n't\sbeen\s)(?<!\byet\s)(?<!\buntil\s)(?<!\bif\s)(?<!\bonce\s)(?<!\bunless\s)(?<!-)\bconfirmed\b
 \brules\s+out\b
 (?<!\bbe\s)(?<!\bnot\s)(?<!\bnot\sbeen\s)(?<!n't\sbeen\s)(?<!\byet\s)(?<!\buntil\s)(?<!\bif\s)(?<!\bonce\s)(?<!\bunless\s)\bruled\s+out\b
 \bdefinitive(ly)?\b
