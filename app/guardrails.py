@@ -39,7 +39,7 @@ def check(prompt: str, client=None) -> GuardrailResult:
         client = client or TypeSafeClient(model=JEV_MODEL)
         res = client.system_one(prompt, {q["name"]: Noul(instructions=q["instructions"]) for q in questions})
         answers = {q["name"]: res.nouls[q["name"]].noul for q in questions}
-    except Exception as e:  # never log the prompt: it may carry PHI
+    except Exception as e:  # noqa: BLE001 - any Jev failure fails closed (refusal); never log the prompt: it may carry PHI
         log.warning("Jev guardrail call failed: %r", e)
         return GuardrailResult(passed=False, answers={}, failed=["jev_error"], model=None)
     failed = [q["name"] for q in questions if fails(q, answers[q["name"]])]

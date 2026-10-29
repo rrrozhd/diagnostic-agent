@@ -11,9 +11,7 @@ from langchain_core.messages import AIMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
 from langchain_core.tools import tool
 
-import app.guardrails as guardrails
-import app.main as main
-import app.tools as tools
+from app import guardrails, main, tools
 from app.agents.copilot import build_agent
 from app.graph import build_graph
 
@@ -121,7 +119,7 @@ def test_pass_runs_agent_and_second_turn_skips_guardrail(monkeypatch, guardrail)
         {"name": "task", "args": {"description": f"cluster {i}", "subagent_type": "diagnostic_researcher"}, "id": f"c{i}"}
         for i in (1, 2)
     ]
-    client, model, graph = client_for(
+    client, _model, graph = client_for(
         monkeypatch,
         replies=[
             task,  # main agent spawns two researchers in parallel

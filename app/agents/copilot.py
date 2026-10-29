@@ -114,8 +114,8 @@ class CostTracker(BaseCallbackHandler):
 
 
 def build_agent(model: BaseChatModel | None = None):
-    from langchain_openrouter import ChatOpenRouter
     from deepagents import create_deep_agent
+    from langchain_openrouter import ChatOpenRouter
 
     # Imported here so the app imports before the other tool modules land.
     from app.tools import drug_label, pubmed_abstract, pubmed_search, query_reference_db
