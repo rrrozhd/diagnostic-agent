@@ -22,7 +22,7 @@ jobs:
       DATASET: diagnostic-agent${{ github.event_name == 'pull_request' && format('-pr-{0}', github.event.pull_request.number) || '' }}
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.3.3
       - run: uv sync --frozen && echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
       - run: python evals/sync_cases.py "$DATASET"
       - uses: langfuse/experiment-action@c7c4efe432e37d4e3693a018de469233c0018de4 # v1.0.12
