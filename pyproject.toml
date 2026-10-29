@@ -11,6 +11,7 @@ dependencies = [
     "langfuse>=5.0.4",
     "langgraph>=1.2.18",
     "pyyaml>=6.0.3",
+    "typesafe-sdk>=0.7.5",
     "uvicorn[standard]>=0.54.0",
 ]
 
@@ -19,7 +20,6 @@ dev = [
     "httpx>=0.28.1",
     "pytest>=9.2.0",
     "ruff==0.17.1",
-    "typesafe-sdk>=0.7.5",
 ]
 
 [tool.pytest.ini_options]
