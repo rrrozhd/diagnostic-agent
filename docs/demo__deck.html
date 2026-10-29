@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Physician's Copilot</title>
+<!-- Source for docs/demo__deck.pdf. Rebuild from docs/: Chrome --headless --no-pdf-header-footer --print-to-pdf=demo__deck.pdf demo__deck.html -->
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  :root {
+    --ink: #1b2433; --muted: #5b6678; --line: #dfe3ea; --soft: #f5f7fa; --accent: #0f6e78;
+    --ai: #b8860b; --ai-bg: #fdf4dc;
+    --rule: #3b5b9a; --rule-bg: #e6edf9;
+    --doc: #2e7d4f; --doc-bg: #e2f3e8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #fff; color: var(--ink);
+    font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide { width: 1280px; height: 720px; padding: 34px 48px 26px; overflow: hidden; display: flex; flex-direction: column; }
+
+  header { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+  .kicker { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 6px; }
+  h1 { font-size: 36px; line-height: 1.1; font-weight: 760; letter-spacing: -.01em; }
+  .sub { font-size: 16px; color: var(--muted); margin-top: 6px; }
+  .contract { font-size: 16px; line-height: 1.45; padding: 10px 16px; border-left: 4px solid var(--accent);
+    background: var(--soft); border-radius: 0 8px 8px 0; flex: none; }
+
+  h2 { font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); font-weight: 750; margin-bottom: 10px; }
+
+  /* figure */
+  .figure { padding: 16px 0 14px; border-bottom: 1px solid var(--line); }
+  .fighead { display: flex; justify-content: space-between; align-items: baseline; }
+  .legend { display: flex; gap: 20px; font-size: 13px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 13px; height: 13px; border-radius: 3px; display: inline-block; border: 2px solid; }
+  .row { display: flex; align-items: stretch; }
+  .row + .row { margin-top: 10px; }
+  .part { flex: none; width: 92px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); display: flex; align-items: center; line-height: 1.3; }
+  .box { flex: 1; border: 2px solid; border-radius: 8px; padding: 7px 9px; font-size: 13px; line-height: 1.25;
+    display: flex; flex-direction: column; justify-content: center; min-height: 62px; }
+  .box b { display: block; font-size: 14px; margin-bottom: 2px; }
+  .box.in { border-color: #9aa3b2; }
+  .box.ai { border-color: var(--ai); background: var(--ai-bg); }
+  .box.rule { border-color: var(--rule); background: var(--rule-bg); }
+  .box.doc { border-color: var(--doc); background: var(--doc-bg); }
+  .arrow { width: 20px; flex: none; display: flex; align-items: center; justify-content: center; color: #8a93a3; font-size: 16px; }
+  .loopnote { flex: 2.2; font-size: 13px; color: var(--muted); display: flex; align-items: center; padding-left: 14px; line-height: 1.35; }
+
+  /* takeaways */
+  .grid { display: grid; grid-template-columns: 0.9fr 1.25fr 1fr; gap: 30px; padding-top: 16px; flex: 1; }
+  ul { list-style: none; }
+  li { font-size: 14.5px; line-height: 1.4; padding-left: 20px; position: relative; margin-bottom: 9px; }
+  li b { font-weight: 700; }
+  .problem li::before { content: "•"; position: absolute; left: 4px; color: var(--accent); font-weight: 800; }
+  .rails li::before { content: "✓"; position: absolute; left: 0; color: var(--doc); font-weight: 800; }
+  .steps { counter-reset: s; }
+  .steps li { counter-increment: s; padding-left: 28px; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 19px; height: 19px; border-radius: 5px;
+    border: 1.5px solid var(--accent); color: var(--accent); font-size: 11.5px; font-weight: 750;
+    display: flex; align-items: center; justify-content: center; }
+
+  footer { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted);
+    border-top: 1px solid var(--line); padding-top: 9px; }
+</style>
+</head>
+<body>
+<section class="slide">
+
+  <header>
+    <div>
+      <div class="kicker">Product demo · draft, October 2026</div>
+      <h1>Physician's Copilot</h1>
+      <p class="sub">A research assistant for doctors: suggests possibilities, shows where every claim comes from, flags what must not be missed.</p>
+    </div>
+    <p class="contract">The copilot <b>suggests, cites and flags</b>.<br>The doctor <b>judges, orders tests and prescribes</b>.</p>
+  </header>
+
+  <div class="figure">
+    <div class="fighead">
+      <h2>How it works: one fixed route, with checks the AI cannot skip</h2>
+      <div class="legend">
+        <span><i style="border-color:var(--ai);background:var(--ai-bg)"></i>AI researcher</span>
+        <span><i style="border-color:var(--rule);background:var(--rule-bg)"></i>Fixed check</span>
+        <span><i style="border-color:var(--doc);background:var(--doc-bg)"></i>Doctor</span>
+      </div>
+    </div>
+    <div class="row">
+      <div class="part">What could this be?</div>
+      <div class="box in"><b>Patient details</b>Symptoms, history, allergies, medicines</div>
+      <div class="arrow">→</div>
+      <div class="box rule"><b>Screen request</b>Clinician? In scope? Names removed</div>
+      <div class="arrow">→</div>
+      <div class="box ai"><b>Suggest conditions</b>Searches the medical literature</div>
+      <div class="arrow">→</div>
+      <div class="box rule"><b>Check each one</b>No real source? Dropped</div>
+      <div class="arrow">→</div>
+      <div class="box rule"><b>Add must&#8209;not&#8209;miss</b>From a fixed list</div>
+      <div class="arrow">→</div>
+      <div class="box ai"><b>Suggest tests</b>That best tell them apart</div>
+      <div class="arrow">→</div>
+      <div class="box doc"><b>Doctor picks</b>The working diagnosis</div>
+    </div>
+    <div class="row">
+      <div class="part">How could it be treated?</div>
+      <div class="box ai"><b>Gather treatments</b>With strength of evidence</div>
+      <div class="arrow">→</div>
+      <div class="box rule"><b>Patient safety check</b>Allergies, conditions, kidneys, pregnancy</div>
+      <div class="arrow">→</div>
+      <div class="box rule"><b>Final check</b>Sources and wording</div>
+      <div class="arrow">→</div>
+      <div class="box doc"><b>Doctor decides</b>What to order and prescribe</div>
+      <div class="loopnote">Nothing about treatment happens until the doctor picks. New findings can send it back to the start.</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="problem">
+      <h2>The problem</h2>
+      <ul>
+        <li>A doctor has minutes to weigh possible conditions, the tests that separate them, and treatments safe for <i>this</i> patient.</li>
+        <li>Nobody can keep up with the thousands of papers published every day.</li>
+        <li>Rare but dangerous conditions get buried under "most likely".</li>
+        <li>Today's AI chatbots sound sure and can invent sources.</li>
+      </ul>
+    </div>
+    <div class="rails">
+      <h2>Guardrails</h2>
+      <ul>
+        <li><b>No source, no claim</b>, and the source must actually say it. Withdrawn papers are never shown.</li>
+        <li><b>Looks for evidence against</b> each possibility, not only for it.</li>
+        <li><b>Must-not-miss conditions are always shown</b>, from a doctor-curated list, not AI judgement.</li>
+        <li><b>Drug warnings come from reference databases</b>; the AI can explain one but not switch it off.</li>
+        <li><b>The doctor decides</b>: treatment research waits for their pick.</li>
+        <li><b>Honest wording</b>, missing information listed, names removed before any outside search.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Next steps</h2>
+      <ul class="steps">
+        <li>Pick the first setting, patient group and country.</li>
+        <li>Agree the must-not-miss list and who keeps it current.</li>
+        <li>License a drug-interaction source (the free one closed).</li>
+        <li>Build the full route and test it on made-up cases.</li>
+        <li>Recruit doctor reviewers; sign privacy agreements before real data.</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <span>Where we are: design agreed and medical reference library in place; guardrails are being built now.</span>
+    <span>Physician's Copilot</span>
+  </footer>
+
+</section>
+</body>
+</html>
