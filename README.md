@@ -24,6 +24,14 @@ Add `OPENROUTER_API_KEY` to `.env`. For CI, set repo secrets `LANGFUSE_PUBLIC_KE
 Note: Langfuse currently holds only the eval datasets and experiment runs. Tracing of the copilot's
 responses through Langfuse is planned for a later iteration.
 
+## Sample prompt
+
+Synthetic, de-identified case to paste as a new case:
+
+```text
+72-year-old woman, 2 days of fever 38.7 C with rigors, dysuria and urinary frequency, and since this morning right flank pain and new confusion (oriented to person only; baseline fully oriented per daughter). HR 112, BP 98/60, RR 22, SpO2 95% on room air. Right costovertebral angle tenderness. No neck stiffness, no rash. History: atrial fibrillation on warfarin (last INR 2.6, two weeks ago); chronic kidney disease stage 3b (eGFR 38 three months ago); type 2 diabetes on sitagliptin. Allergies: sulfonamide antibiotics (Stevens-Johnson syndrome, 2011). No recent travel. Lives alone, independent. What should I consider?
+```
+
 ## Layout
 
 - `app/`: API, agent graph, tools, guardrails, retrieval, memory
