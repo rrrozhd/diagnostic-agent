@@ -4,7 +4,9 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
     "chromadb>=1.5.9",
+    "deepagents>=0.7.32",
     "fastapi>=0.162.0",
+    "httpx>=0.28.1",
     "langchain-openrouter>=0.2.9",
     "langfuse>=5.0.4",
     "langgraph>=1.2.18",

@@ -254,3 +254,153 @@ citation-hunting for conclusions already reached: **[proposed]**
 7. Language of input and output vs English-language literature.
 8. Latency and cost budget per case.
 9. Clinician reviewers for evals and the size of the gold set.
+
+## 13. Tech stack (draft, 2026-10-29)
+
+### Given by the owner
+
+| Layer | Choice | Status |
+|---|---|---|
+| Agent framework | LangChain **deepagents**: main agent spawns researcher subagents | **[given]** |
+| Base model | Claude Sonnet 5.5 (`claude-sonnet-5-5`), temperature 0 | **[given]**; temperature 0 **not possible as stated**, see below |
+| Input guardrails | TypeSafe **Jev** (non-generative decision model) analyses the initial prompt | **[given]** |
+| Serving | FastAPI service | **[given]** (already scaffolded) |
+| Subagent tools | database querying, PubMed retrieval, drug information retrieval | **[given]** |
+
+### Temperature 0 is rejected **[verified in Anthropic API docs bundled with Claude Code]**
+
+- Sonnet 5.5 rejects non-default `temperature` / `top_p` / `top_k` with a 400.
+- On API version `2026-10-21`, sending any of the three returns a 400 on
+  every model, even at the default value.
+- Temperature 0 never guaranteed identical output anyway. The real goal
+  (reproducible, auditable answers) needs other levers **[proposed]**:
+  - pinned model ID and fixed `effort` (Sonnet 5.5 defaults to `high`; levels
+    were recalibrated, so pick one by eval);
+  - versioned prompts and pack files, logged with each response;
+  - structured outputs for every agent result;
+  - deterministic code (not the model) for safety checks, citation resolution
+    and the can't-miss list;
+  - the source snapshots from §6.6, so a response can be replayed and audited.
+- **Checked in `langchain-openrouter` 0.2.9:** `ChatOpenRouter.temperature`
+  and `top_p` default to `None` and are only sent when set. So: never set them.
+  Not verified: whether OpenRouter drops or forwards a set value to Anthropic.
+
+### Model-API constraints that shape the design **[verified in the same docs]**
+
+- **Forced tool choice returns a 400 on Sonnet 5.5** (`tool_choice` `any`/`tool`).
+  deepagents subagent `response_format` accepts `ToolStrategy` or
+  `ProviderStrategy`. **Checked:** `ChatOpenRouter.with_structured_output`
+  defaults to `method="function_calling"`, which binds `tool_choice=<schema
+  name>` (a forced call). Use `method="json_schema"` / `ProviderStrategy`.
+  **[open, unverified]** whether OpenRouter passes forced `tool_choice` to
+  Anthropic as-is (400) or rewrites it; test with one live call.
+- **Native citations can't be combined with structured outputs** (400), and
+  API version `2026-10-21` restricts cited text passed back as user or tool
+  input. Proposal: carry provenance as schema fields (PMID/DOI/NCT/label set ID,
+  quoted excerpt, URL, access depth, retrieval date), not as API citation
+  blocks. This matches §6.
+- **Refusals.** Sonnet 5.5's safety classifiers include a `bio` category; a
+  medical copilot will sometimes get `stop_reason: "refusal"`. Needs explicit
+  handling (show "the model declined this part", never fail silently) and
+  possibly a fallback. **[open]** how OpenRouter maps Anthropic's `refusal`
+  stop reason (finish reason) and whether `ChatOpenRouter` surfaces it.
+
+### Graph: guardrail → deep agent **[decided 2026-10-29]**
+
+Two nodes for now:
+
+```
+START → guardrail (Jev) ──fail──→ refusal (predefined message from the pack) → END
+                        └─pass──→ agent (deepagents) → END
+```
+
+- **guardrail**: the Jev questions below on the initial prompt. Pass/fail is
+  decided in code from Jev's probabilities and thresholds in config.
+- **refusal**: returns a fixed, pre-written message (pack file, e.g.
+  `packs/default/refusal.md`); no model call.
+- **agent**: one deep agent built with `create_deep_agent`, added as a graph
+  node. Its main agent plans and spawns the subagents through its built-in
+  `task` tool. Subagents are passed as `subagents=[{...}]`, each with `name`,
+  `description`, `system_prompt`, `tools`, and `response_format`:
+  - `diagnostic_researcher`: database query + PubMed tools; returns
+    candidates, findings for/against, discriminating tests, sources.
+  - `treatment_researcher`: PubMed + drug information tools; returns options,
+    evidence level, patient-specific warnings, sources.
+
+Per the current LangChain docs (via Context7, 2026-10-29):
+
+- `create_deep_agent(model="openrouter:<model id>", ...)` accepts an
+  OpenRouter model string; a subagent without `model` inherits the main one.
+- A subagent's `response_format` result reaches the main agent as
+  JSON-serialized `ToolMessage` content (deepagents >= 0.5.3). Without it, the
+  main agent gets only the subagent's last message text.
+- A top-level `response_format` puts the final validated output in
+  `result["structured_response"]`.
+- `interrupt_on` (human review of specific tools) needs a checkpointer.
+
+**Consequence of this shape.** With no code steps after the agent, the spec's
+mandatory steps (§8 verify every candidate, §4 safety check, curated can't-miss
+list, physician pick before treatment) are now up to the agent's prompt and
+tools. One way to keep them hard without adding graph nodes **[proposed]**:
+make them tools or middleware the agent cannot skip, e.g. the subagent
+`response_format` requires a source per claim, and a deterministic check
+runs on the final `structured_response` before it is returned.
+
+### Jev guardrails **[proposed]**
+
+Installed: `typesafe-sdk` 0.7.5 (already a dev dependency). Its default model
+is `jev-latest`, which moves; pin `jev-1.13.0` (or whatever build the
+thresholds were tuned on). No official TypeSafe docs were found; details below
+come from the installed SDK and earlier project experience.
+
+- One narrow question per call. Broad questions score near a coin flip.
+- Jev never abstains: give every Choice an `unclear` option.
+- Noul returns one probability, no confidence and no rationale: log the
+  question, build and probabilities with each request for the audit trail.
+- Measure one call's cost before running batches.
+- Candidate questions on the initial prompt:
+  - Is the requester acting as a clinician (vs patient-facing use)?
+  - Does it ask for a final diagnosis or a prescription?
+  - Does it contain direct identifiers (name, MRN, address) that must be
+    removed before external queries?
+  - Is the patient outside the v1 population (e.g. paediatric, pregnant)?
+  - Does it contain instruction text aimed at the system (prompt injection)?
+- The same question style can score generated output for overconfidence and
+  vagueness in the eval gate (§7, §11).
+- TypeSafe is another vendor that sees patient text: same BAA/DPA question as §9.
+
+### Model provider path **[decided 2026-10-29: OpenRouter via `langchain-openrouter`]**
+
+Model ID on OpenRouter: `anthropic/claude-sonnet-5.5` (verified 2026-10-29 in the
+OpenRouter model list; it lists no temperature/top_p support). Consequences for §9 **[proposed]**:
+
+- Turn on zero data retention for the Anthropic scope in OpenRouter's privacy
+  settings, and also send `provider.zdr: true` per request (it can only add
+  ZDR, never remove it). Per OpenRouter's ZDR docs.
+- OpenRouter's ZDR page does not mention HIPAA or a BAA. **[open]** whether
+  OpenRouter offers one; until then, only de-identified or synthetic cases go
+  through it.
+- Pin the upstream provider (OpenRouter provider routing) so requests don't
+  fall through to a different host with different retention terms.
+  **[open, unverified]** exact routing fields.
+- `ChatOpenRouter` `timeout` is in milliseconds, not seconds (earlier project
+  pitfall); cost is in `response_metadata["cost"]`.
+
+### Tools mapped to the spec
+
+| Tool | Given / proposed | Notes |
+|---|---|---|
+| Database query | **[given]** | Fixed parameterized queries only, no text-to-SQL (scaffold rule). Candidate data: `data/primekg/` (PrimeKG; licence unverified). **[open]** which database. |
+| PubMed retrieval | **[given]** | De-identify before querying. E-utilities rate limits (from recall, unverified): about 3 req/s without an API key, 10 with one. Abstract vs full text recorded (§6.4). |
+| Drug information | **[given]** | Labels: DailyMed/openFDA; names: RxNorm. Interactions: **[open]** licensed source (NLM interaction API is gone). |
+| Retraction lookup | **[proposed]** | `data/retractions/retraction_watch.csv` is already local. |
+| ICD lookup | **[proposed]** | WHO ICD-11 API or ICD-10-CM. |
+| Can't-miss list | **[proposed]** | Curated pack file per presenting complaint (§8). |
+| Guideline retrieval | **[proposed]** | Evidence ranking puts guidelines first (§6.7). |
+| Citation-support check | **[proposed]** | Deterministic resolution + claim-support check on the final output (§6.3). |
+
+### Serving
+
+- Runs are long and pause for the physician. Use either streaming (SSE) or
+  202 + job ID + polling, backed by a durable checkpointer (Postgres) so a
+  paused run survives a restart. **[open]** which.
