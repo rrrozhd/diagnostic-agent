@@ -21,6 +21,9 @@ Add `OPENROUTER_API_KEY` to `.env`. For CI, set repo secrets `LANGFUSE_PUBLIC_KE
 `OPENROUTER_API_KEY` (plus `TYPESAFE_API_KEY` once `evals/gate.yaml` has judge questions) and variable
 `LANGFUSE_BASE_URL` (Langfuse Cloud or your self-hosted URL).
 
+Note: Langfuse currently holds only the eval datasets and experiment runs. Tracing of the copilot's
+responses through Langfuse is planned for a later iteration.
+
 ## Layout
 
 - `app/`: API, agent graph, tools, guardrails, retrieval, memory
