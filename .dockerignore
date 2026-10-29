@@ -1,0 +1,14 @@
+.git
+.github
+.env
+**/.env
+.venv
+**/node_modules
+frontend/dist
+**/__pycache__
+.pytest_cache
+.ruff_cache
+chroma/
+infra/
+evals/
+tests/

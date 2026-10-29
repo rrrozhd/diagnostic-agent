@@ -1,0 +1,51 @@
+name: evals
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    env:
+      LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+      LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+      LANGFUSE_BASE_URL: ${{ vars.LANGFUSE_BASE_URL || 'https://cloud.langfuse.com' }}
+      # PRs get their own dataset so unmerged cases never touch main's.
+      DATASET: diagnostic-agent${{ github.event_name == 'pull_request' && format('-pr-{0}', github.event.pull_request.number) || '' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - run: uv sync --frozen && echo "$PWD/.venv/bin" >> "$GITHUB_PATH"
+      - run: python evals/sync_cases.py "$DATASET"
+      - uses: langfuse/experiment-action@c7c4efe432e37d4e3693a018de469233c0018de4 # v1.0.12
+        id: gate
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+          PYTHONPATH: ${{ github.workspace }}
+        with:
+          langfuse_public_key: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          langfuse_secret_key: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          langfuse_base_url: ${{ env.LANGFUSE_BASE_URL }}
+          experiment_path: evals/gate.py
+          dataset_name: ${{ env.DATASET }}
+          should_skip_sdk_installation: "true"
+          github_token: ${{ github.token }}
+      # Per-case outputs and scores, kept even when the gate fails.
+      - if: always()
+        env:
+          RESULT_JSON: ${{ steps.gate.outputs.result_json }}
+        run: printf '%s' "$RESULT_JSON" > eval-result.json
+      - if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: eval-result-${{ env.DATASET }}
+          path: eval-result.json

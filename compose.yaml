@@ -1,0 +1,15 @@
+# Local deploy of the production image: make up / make smoke / make down.
+services:
+  app:
+    build: .
+    image: ${IMAGE:-diagnostic-agent:local}
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Inside the container, localhost is the container itself; this reaches `make langfuse` on the host.
+      LANGFUSE_BASE_URL: http://host.docker.internal:3000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 127.0.0.1:8080:8080

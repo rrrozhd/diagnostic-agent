@@ -1,0 +1,22 @@
+# Thresholds for evals/gate.py. Hard-rule hits (pack banned_phrases.txt, per-case must_not) always fail.
+min_accuracy: 0.9
+
+# Retrieval, for cases with `sources`: the app's output lists retrieved doc ids in `sources`, best first.
+# A case's recall is the share of its sources found in the top k; the gate fails when the mean is below min_recall.
+retrieval:
+  k: 5
+  min_recall: 0.8
+
+# Jev judge (TypeSafe, needs TYPESAFE_API_KEY); off while questions is empty. Questions go to Jev as written:
+# type noul (yes/no -> P(true)), score (criteria: ordered levels -> expected level) or choice (criteria: label map).
+# The state Jev sees is {input, output, expected}; refer to fields in backticks. Give choices an `unclear` option:
+# Jev never abstains. Each answer is a score named after its question.
+judge:
+  model: jev-1.13.0  # pinned: thresholds shift between versions
+  questions: {}
+    # promises_refund:
+    #   type: noul
+    #   instructions: Does `output` promise, confirm or imply a refund?
+  # Gate on a question's mean over all cases, once its noise is known. Choice questions are recorded only.
+  thresholds: {}
+    # promises_refund: {max: 0.1}

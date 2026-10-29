@@ -1,0 +1,17 @@
+# Local dev only: pinned images; only the web UI is published, on 127.0.0.1.
+name: diagnostic-agent-langfuse
+services:
+  langfuse-web:
+    image: docker.langfuse.com/langfuse/langfuse:4.58.0
+    ports: !override ["127.0.0.1:3000:3000"]
+  langfuse-worker:
+    image: docker.langfuse.com/langfuse/langfuse-worker:4.58.0
+    ports: !reset []
+  postgres:
+    ports: !reset []
+  redis:
+    ports: !reset []
+  clickhouse:
+    ports: !reset []
+  minio:
+    ports: !reset []
