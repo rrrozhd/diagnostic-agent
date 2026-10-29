@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Copilot · Case chat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F6F3}
+a{color:#0E5C56}a:hover{color:#08403C}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+.lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#55605B;font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.t-more{background:#0E5C56;color:#FFFFFF}
+.t-poss{background:#D7EAE6;color:#0B4A45}
+.t-less{background:#FFFFFF;color:#15201D;border:1.5px dashed #55605B}
+.cm{background:#8A3409;color:#FFFFFF}
+.ver{background:#F0F2EF;color:#2E3633}
+.unv{background:#FFFFFF;color:#8A3409;border:1.5px dashed #8A3409}
+.warn{background:#FFF3E8;color:#8A3409;border:1px solid #E7B48F}
+.cite{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;font-weight:500;padding:1px 6px;border:1px solid #B3C6C1;border-radius:4px;color:#0B4A45;background:#FFFFFF;white-space:nowrap;margin-left:4px;cursor:pointer;line-height:1.5}
+.cite:hover{background:#D7EAE6;border-color:#0E5C56}
+.reason{background:#EEEEE9;font-style:italic;padding:1px 4px;border-radius:3px}
+.rtag{font-style:normal;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#55605B;margin-right:6px}
+.case{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:8px;text-decoration:none;color:#15201D;min-height:44px;box-sizing:border-box}
+.case:hover{background:#ECEFEB;color:#15201D}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:8px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;background:#FFFFFF;color:#15201D;border:1px solid #C9CFC9;text-decoration:none}
+.btn:hover{border-color:#6B746F;color:#15201D}
+.pri{background:#0E5C56;color:#FFFFFF;border-color:#0E5C56}
+.pri:hover{background:#08403C;color:#FFFFFF}
+.art{display:flex;gap:12px;align-items:center;width:100%;max-width:440px;text-align:left;font:inherit;color:#15201D;background:#FFFFFF;border:1px solid #DDE1DC;border-radius:10px;padding:12px 14px;cursor:pointer;min-height:56px}
+.art:hover{border-color:#0E5C56}
+.tab{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:14px;font-weight:500;color:#3F4743;background:transparent;border:0;border-bottom:3px solid transparent;min-height:44px;padding:0 12px;cursor:pointer}
+.tab:hover{color:#15201D}
+.tab:disabled{color:#6B746F;cursor:not-allowed}
+.col ul{margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (min-width:1000px){.app{height:100vh;overflow:hidden}.side,.panel{height:100vh;overflow-y:auto}.chat{height:100vh}.msgs{overflow-y:auto;min-height:0}}
+@media (max-width:760px){.side{max-width:none!important;border-right:0!important;border-bottom:1px solid #DDE1DC}.side .find,.side .me,.cases .lbl{display:none!important}.cases{flex-direction:row!important;overflow-x:auto;gap:8px!important}.cases .case{flex:none;width:210px;border:1px solid #DDE1DC}}
+</style>
+</helmet>
+<div class="app" style="min-height: 100vh; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #15201D; background: #F5F6F3; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Cases" class="side" style="flex: 1 1 260px; max-width: 300px; min-width: 0; background: #FAFBF9; border-right: 1px solid #DDE1DC; padding: 16px 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 4px">
+<svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="#0E5C56" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="24" height="24" rx="7"></rect><path d="M14 8v12M8 14h12"></path></svg>
+<span style="font-weight: 700; font-size: 17px">Copilot</span>
+</div>
+<a href="NewCase.dc.html" class="btn pri" style="justify-content: flex-start">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New case</a>
+<label for="find" class="vh find">Search cases</label>
+<input id="find" class="find" type="search" placeholder="Search cases" style="font: inherit; font-size: 14px; min-height: 44px; box-sizing: border-box; padding: 0 12px; border: 1px solid #DDE1DC; border-radius: 8px; background: #FFFFFF">
+<div class="cases" style="display: flex; flex-direction: column; gap: 2px">
+<span class="lbl" style="padding: 4px 12px">Today</span>
+<a class="case" href="Main.dc.html" aria-current="page" style="background: #FFFFFF; box-shadow: inset 0 0 0 1px #DDE1DC"><span style="font-weight: 600; font-size: 14px">58 F · pleuritic chest pain</span><span style="font-size: 12px; color: #8A3409; font-weight: 600">2 can&#39;t-miss open</span></a>
+<a class="case" href="#"><span style="font-weight: 500; font-size: 14px">71 M · confusion, fever</span><span style="font-size: 12px; color: #8A3409; font-weight: 600">1 can&#39;t-miss open</span></a>
+<a class="case" href="#"><span style="font-weight: 500; font-size: 14px">34 F · palpitations</span><span style="font-size: 12px; color: #3F4743">Inputs only · not run</span></a>
+<span class="lbl" style="padding: 12px 12px 4px">Yesterday</span>
+<a class="case" href="#"><span style="font-weight: 500; font-size: 14px">66 M · back pain, weight loss</span><span style="font-size: 12px; color: #3F4743">Differential · 3 sources</span></a>
+<a class="case" href="#"><span style="font-weight: 500; font-size: 14px">45 F · rash after new drug</span><span style="font-size: 12px; color: #3F4743">Treatment · 1 allergy flag</span></a>
+</div>
+<div class="me" style="margin-top: auto; padding: 12px 8px 0; border-top: 1px solid #DDE1DC; font-size: 12px; color: #55605B; display: flex; flex-direction: column; gap: 2px">
+<span style="color: #15201D; font-size: 14px">Dr [NAME]</span>
+<span>Decision support · not a diagnosis</span>
+</div>
+</nav>
+
+<section aria-label="Case conversation" class="chat" style="flex: 999 1 460px; min-width: 0; display: flex; flex-direction: column; background: #FFFFFF; border-right: 1px solid #DDE1DC">
+<header style="display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; padding: 14px 24px; border-bottom: 1px solid #DDE1DC">
+<h1 style="margin: 0; font-size: 17px; font-weight: 600">58 F · pleuritic chest pain</h1>
+<span class="mono" style="font-size: 13px; color: #55605B">Case [4471]</span>
+<span style="font-size: 13px; color: #3F4743">Outpatient · opened 09:42</span>
+</header>
+
+<div class="msgs" style="flex: 1 1 auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end">
+<span style="font-size: 12px; color: #55605B">You · 09:42</span>
+<div style="background: #F0F2EF; border-radius: 14px 14px 4px 14px; padding: 12px 16px; max-width: 520px; font-size: 14px">58F, 3/7 R pleuritic CP, worsening, productive cough, SOBOE. Flew 11h 6 days ago. HTN on amlodipine. PCN allergy (hives 2014). Dad MI at 61. T 38.4, HR 104, SpO2 93% RA. Crackles R base.</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; color: #55605B">Copilot · 09:43</span>
+<p style="margin: 0; font-size: 15px; max-width: 60ch">I read 12 fields. Four are missing or partial, so dosing checks and the PE score will not run yet.</p>
+<button class="art" onClick="{{ openInputs }}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="2" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
+<span style="display: flex; flex-direction: column; flex: 1"><span style="font-weight: 600; font-size: 14px">Inputs</span><span style="font-size: 12px; color: #3F4743">12 fields · 4 gaps · check codes</span></span>
+<span class="chip ver">Open</span>
+</button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; color: #55605B">Copilot · 09:47</span>
+<p style="margin: 0; font-size: 15px; max-width: 60ch">The differential is ready. Two can&#39;t-miss conditions come first: pulmonary embolism and acute coronary syndrome. I could not verify aortic dissection, so it is marked unverified.</p>
+<button class="art" onClick="{{ openDiff }}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h6"></path></svg>
+<span style="display: flex; flex-direction: column; flex: 1"><span style="font-weight: 600; font-size: 14px">Differential</span><span style="font-size: 12px; color: #3F4743">4 verified · 1 unverified · 6 sources</span></span>
+<span class="chip cm">2 can&#39;t miss</span>
+</button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end">
+<span style="font-size: 12px; color: #55605B">You · 09:49</span>
+<div style="background: #F0F2EF; border-radius: 14px 14px 4px 14px; padding: 12px 16px; max-width: 520px; font-size: 14px">Why is PE only “possible”?</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; color: #55605B">Copilot · 09:49</span>
+<p style="margin: 0; font-size: 15px; max-width: 60ch">Recent long-haul travel and HR 104 fit PE<button class="cite" onClick="{{ c.O1 }}" aria-label="Source O1">O1</button><button class="cite" onClick="{{ c.G1 }}" aria-label="Source G1">G1</button>, but fever with productive cough points toward infection<button class="cite" onClick="{{ c.SR1 }}" aria-label="Source SR1">SR1</button>. The pre-test score can&#39;t be computed: leg exam, haemoptysis, cancer and prior VTE are not recorded. These tests would most change the picture:</p>
+<button class="art" onClick="{{ openTests }}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="2" aria-hidden="true"><path d="M9 3v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V3"></path><path d="M8 3h8"></path></svg>
+<span style="display: flex; flex-direction: column; flex: 1"><span style="font-weight: 600; font-size: 14px">Discriminating tests</span><span style="font-size: 12px; color: #3F4743">6 tests across 4 candidates</span></span>
+<span class="chip ver">Open</span>
+</button>
+</div>
+
+<sc-if value="{{ unmarked }}" hint-placeholder-val="{{ true }}">
+<div style="border: 1.5px solid #0E5C56; border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; max-width: 560px; background: #F7FBFA">
+<div style="display: flex; gap: 10px; align-items: flex-start">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="2" style="flex: none; margin-top: 3px" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<strong style="font-weight: 600">Treatment research waits for your working diagnosis</strong>
+<span style="font-size: 14px; color: #3F4743">It runs only for what you mark. Can&#39;t-miss conditions stay open either way.</span>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button class="btn pri" onClick="{{ mark }}">Mark community-acquired pneumonia</button>
+<button class="btn" onClick="{{ openDiff }}">Choose from the differential</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ marked }}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 13px; color: #3F4743; border-top: 1px dashed #C9CFC9; border-bottom: 1px dashed #C9CFC9; padding: 6px 0">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="2.5" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>
+<span style="flex: 1 1 260px">09:51 · You marked <strong style="font-weight: 600; color: #15201D">community-acquired pneumonia</strong> as working diagnosis. PE and ACS stay open.</span>
+<button class="btn" onClick="{{ undo }}" style="min-height: 36px; font-size: 13px; border-color: transparent; color: #0E5C56">Undo</button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; color: #55605B">Copilot · 09:52</span>
+<p style="margin: 0; font-size: 15px; max-width: 60ch">Treatment options for pneumonia only. One allergy conflict: amoxicillin is a penicillin. The interaction check is incomplete until the medication list is.</p>
+<button class="art" onClick="{{ openTx }}">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="2" aria-hidden="true"><rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"></rect><path d="M9.5 9.5l5 5"></path></svg>
+<span style="display: flex; flex-direction: column; flex: 1"><span style="font-weight: 600; font-size: 14px">Treatment · pneumonia</span><span style="font-size: 12px; color: #3F4743">3 options · 4 sources</span></span>
+<span class="chip warn">1 allergy flag</span>
+</button>
+</div>
+</sc-if>
+</div>
+
+<div style="padding: 12px 24px 20px; border-top: 1px solid #DDE1DC; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button class="btn" style="min-height: 36px; font-size: 13px; font-weight: 500; border-radius: 999px">Add leg exam findings</button>
+<button class="btn" style="min-height: 36px; font-size: 13px; font-weight: 500; border-radius: 999px">Add D-dimer result</button>
+<button class="btn" style="min-height: 36px; font-size: 13px; font-weight: 500; border-radius: 999px">Complete medication list</button>
+</div>
+<div style="display: flex; gap: 8px; align-items: flex-end; border: 1px solid #C9CFC9; border-radius: 12px; padding: 8px 8px 8px 14px">
+<label for="ask" class="vh">Ask about this case</label>
+<textarea id="ask" rows="2" placeholder="Ask about this case, or add a finding" style="flex: 1; font: inherit; font-size: 15px; border: 0; resize: none; outline: none; padding: 6px 0; background: transparent"></textarea>
+<button class="btn" aria-label="Attach a result" style="width: 44px; padding: 0; border-color: transparent"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 12l-8 8a5 5 0 0 1-7-7l8-8a3 3 0 0 1 4 4l-8 8a1 1 0 0 1-1-1l7-7"></path></svg></button>
+<button class="btn pri" aria-label="Send" style="width: 44px; padding: 0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+</div>
+<span style="font-size: 12px; color: #55605B">Identifiers are removed before anything leaves the boundary.</span>
+</div>
+</section>
+
+<aside aria-label="Research artifact" class="panel" style="flex: 999 1 520px; min-width: 0; background: #F5F6F3; display: flex; flex-direction: column">
+<div style="background: #FFFFFF; border-bottom: 1px solid #DDE1DC; padding: 0 16px; display: flex; flex-wrap: wrap; gap: 2px">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+<sc-if value="{{ t.active }}" hint-placeholder-val="{{ false }}"><button class="tab" aria-pressed="true" style="color: #15201D; font-weight: 600; border-bottom-color: #0E5C56" onClick="{{ t.pick }}">{{ t.label }}</button></sc-if>
+<sc-if value="{{ t.idle }}" hint-placeholder-val="{{ true }}"><button class="tab" aria-pressed="false" onClick="{{ t.pick }}">{{ t.label }}</button></sc-if>
+<sc-if value="{{ t.locked }}" hint-placeholder-val="{{ false }}"><button class="tab" disabled="" aria-label="Treatment, locked until you mark a working diagnosis"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>{{ t.label }}</button></sc-if>
+</sc-for>
+</div>
+
+<sc-if value="{{ isDiff }}" hint-placeholder-val="{{ true }}">
+<div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline">
+<h2 style="margin: 0; font-size: 20px; font-weight: 600">Differential</h2>
+<span style="font-size: 13px; color: #3F4743">v1 · 09:47 · grouped by tier, not ranked</span>
+<button class="btn" style="margin-left: auto; min-height: 36px; font-size: 13px">Copy to note</button>
+</div>
+<div style="border: 1.5px solid #E7B48F; background: #FFF8F2; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-weight: 700; color: #8A3409; font-size: 14px">Can&#39;t miss — exclude before you close the case</span>
+<div style="background: #FFFFFF; border: 1px solid #E9D3C3; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center"><strong style="font-weight: 600">Pulmonary embolism</strong><span class="mono" style="font-size: 12px; color: #55605B">I26.99</span><span class="chip t-poss">Possible</span><span class="chip ver">3 sources</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px 20px">
+<div class="col" style="flex: 1 1 150px; min-width: 0"><span class="lbl">For</span><ul><li>11 h flight<button class="cite" onClick="{{ c.O1 }}" aria-label="Source O1">O1</button></li><li>HR 104, SpO₂ 93%<button class="cite" onClick="{{ c.G1 }}" aria-label="Source G1">G1</button></li></ul></div>
+<div class="col" style="flex: 1 1 150px; min-width: 0"><span class="lbl">Against</span><ul><li>Fever, productive cough<button class="cite" onClick="{{ c.SR1 }}" aria-label="Source SR1">SR1</button></li></ul></div>
+<div class="col" style="flex: 1 1 150px; min-width: 0"><span class="lbl">Missing</span><ul><li>Leg exam, haemoptysis</li></ul></div>
+</div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E9D3C3; border-radius: 10px; padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center"><strong style="font-weight: 600">Acute coronary syndrome</strong><span class="mono" style="font-size: 12px; color: #55605B">I24.9</span><span class="chip t-less">Less likely, important to exclude</span><span style="font-size: 13px; color: #3F4743">Missing: ECG, troponin</span></div>
+<div style="background: #FFFFFF; border: 1.5px dashed #C78A5E; border-radius: 10px; padding: 12px 14px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center"><strong style="font-weight: 600">Aortic dissection</strong><span class="chip unv">Model-proposed · unverified</span><span style="font-size: 13px; color: #3F4743">No source linked the findings. Shown for harm.</span></div>
+</div>
+<div style="background: #FFFFFF; border: 1.5px solid #0E5C56; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center"><span class="chip t-more">More likely</span><strong style="font-weight: 600">Community-acquired pneumonia</strong><span class="mono" style="font-size: 12px; color: #55605B">J18.9</span>
+<sc-if value="{{ marked }}" hint-placeholder-val="{{ false }}"><span class="chip ver">Working diagnosis</span></sc-if>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px 20px">
+<div class="col" style="flex: 1 1 150px; min-width: 0"><span class="lbl">For</span><ul><li>Fever, productive cough<button class="cite" onClick="{{ c.SR1 }}" aria-label="Source SR1">SR1</button></li><li>Crackles, right base<button class="cite" onClick="{{ c.SR1 }}" aria-label="Source SR1">SR1</button></li></ul></div>
+<div class="col" style="flex: 1 1 150px; min-width: 0"><span class="lbl">Against</span><ul><li>None found. A gap, not support.</li></ul></div>
+<div class="col" style="flex: 1 1 150px; min-width: 0"><span class="lbl">Missing</span><ul><li>Chest X-ray, CRP</li></ul></div>
+</div>
+<p style="margin: 0; font-size: 13px; color: #3F4743"><span class="reason"><span class="rtag">Model reasoning · no source</span>A 3-day worsening course fits a bacterial cause.</span></p>
+<sc-if value="{{ unmarked }}" hint-placeholder-val="{{ true }}"><button class="btn pri" onClick="{{ mark }}" style="align-self: flex-start">Mark as working diagnosis</button></sc-if>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 12px; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center"><span class="chip t-poss">Possible</span><strong style="font-weight: 600">Acute pericarditis</strong><span class="mono" style="font-size: 12px; color: #55605B">I30.9</span><span style="font-size: 13px; color: #3F4743">Missing: ECG, friction rub</span></div>
+<p style="margin: 0; font-size: 12px; color: #55605B">Missing: eGFR, LFTs, full medication list, leg exam, labs · PubMed retrieved 09:44 · <span class="mono">Audit [—]</span></p>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTests }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline">
+<h2 style="margin: 0; font-size: 20px; font-weight: 600">Discriminating tests</h2>
+<span style="font-size: 13px; color: #3F4743">v1 · 09:49 · ordering stays in your EHR</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 12px; overflow-x: auto">
+<table style="width: 100%; min-width: 520px; border-collapse: collapse; font-size: 13px">
+<caption style="text-align: left; padding: 12px 16px 6px; font-weight: 600; font-size: 14px">Shift in likelihood per candidate</caption>
+<thead><tr style="text-align: left; border-bottom: 1px solid #DDE1DC"><th scope="col" class="lbl" style="padding: 8px 16px">Test</th><th scope="col" class="lbl" style="padding: 8px">CAP</th><th scope="col" class="lbl" style="padding: 8px">PE</th><th scope="col" class="lbl" style="padding: 8px">ACS</th><th scope="col" class="lbl" style="padding: 8px">Pericarditis</th></tr></thead>
+<tbody>
+<tr style="border-bottom: 1px solid #ECEEEA"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 600">12-lead ECG</th><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px">Small</td><td style="padding: 10px 8px; font-weight: 600">Large</td><td style="padding: 10px 8px; font-weight: 600">Large</td></tr>
+<tr style="border-bottom: 1px solid #ECEEEA"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 600">Chest X-ray</th><td style="padding: 10px 8px; font-weight: 600">Large</td><td style="padding: 10px 8px">Small</td><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px">Small</td></tr>
+<tr style="border-bottom: 1px solid #ECEEEA"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 600">hs-Troponin</th><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px">Small</td><td style="padding: 10px 8px; font-weight: 600">Large</td><td style="padding: 10px 8px">Small</td></tr>
+<tr style="border-bottom: 1px solid #ECEEEA"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 600">D-dimer</th><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px">Moderate, if pre-test not high</td><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px">—</td></tr>
+<tr><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 600">CT pulmonary angiography</th><td style="padding: 10px 8px">Small</td><td style="padding: 10px 8px; font-weight: 600">Large</td><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px">—</td></tr>
+</tbody>
+</table>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px"><span class="chip warn">CTPA: eGFR not recorded</span><span class="chip warn">PE score items missing</span></div>
+<p style="margin: 0; font-size: 12px; color: #55605B">Accuracy figures appear only when a cited source gives them.</p>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTx }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline">
+<h2 style="margin: 0; font-size: 20px; font-weight: 600">Treatment · community-acquired pneumonia</h2>
+<span style="font-size: 13px; color: #3F4743">v1 · 09:52 · the choice is yours</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px"><span class="chip warn">Allergy: 1 conflict</span><span class="chip ver">Interactions: incomplete</span><span class="chip ver">Dosing: not run, eGFR missing</span><span class="chip ver">Pregnancy: no flag</span></div>
+<div style="background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center"><strong style="font-weight: 600">Amoxicillin</strong><span class="chip ver">Guideline</span></div>
+<div style="background: #8A3409; color: #FFFFFF; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-weight: 600">Allergy conflict. Amoxicillin is a penicillin. Penicillin allergy recorded (hives, 2014).</div>
+<span style="font-size: 12px; color: #3F4743">Flag fired by the interaction database<button class="cite" onClick="{{ c.DB }}" aria-label="Source DB">DB</button></span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center"><strong style="font-weight: 600">Doxycycline</strong><span class="chip ver">Guideline</span><span class="chip t-poss">No allergy flag</span></div>
+<span style="font-size: 13px">Listed as an outpatient option<button class="cite" onClick="{{ c.G2 }}" aria-label="Source G2">G2</button> · label<button class="cite" onClick="{{ c.L1 }}" aria-label="Source L1">L1</button></span>
+<span class="chip warn" style="align-self: flex-start">Interaction check incomplete</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center"><strong style="font-weight: 600">Azithromycin</strong><span class="chip ver">Guideline · conditional</span><span class="chip t-poss">No allergy flag</span></div>
+<span style="font-size: 13px">Listed where local macrolide resistance is low<button class="cite" onClick="{{ c.G2 }}" aria-label="Source G2">G2</button> · QT warning on label<button class="cite" onClick="{{ c.L2 }}" aria-label="Source L2">L2</button></span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px"><span class="chip warn">QT check incomplete</span><span class="chip warn">Local resistance data not found</span></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isInputs }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline">
+<h2 style="margin: 0; font-size: 20px; font-weight: 600">What the copilot understood</h2>
+<span style="font-size: 13px; color: #3F4743">Check codes: a misparsed allergy breaks every safety check</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 12px; overflow-x: auto">
+<table style="width: 100%; min-width: 480px; border-collapse: collapse; font-size: 13px">
+<caption style="text-align: left; padding: 12px 16px 6px; font-weight: 600; font-size: 14px">Parsed inputs · “not recorded” is never read as “none”</caption>
+<tbody>
+<tr style="border-bottom: 1px solid #ECEEEA"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 500">Symptoms</th><td style="padding: 10px 8px">Pleuritic chest pain, 3 d · productive cough · exertional dyspnoea</td><td style="padding: 10px 8px" class="mono">SNOMED 29857009 +2</td><td style="padding: 10px 8px"><span class="chip t-poss">Recorded</span></td></tr>
+<tr style="border-bottom: 1px solid #ECEEEA; background: #FFFBF6"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 500">Allergies</th><td style="padding: 10px 8px">Penicillin — hives (2014)</td><td style="padding: 10px 8px" class="mono">SNOMED 91936005</td><td style="padding: 10px 8px"><span class="chip t-poss">Recorded</span></td></tr>
+<tr style="border-bottom: 1px solid #ECEEEA"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 500">Prior ADRs</th><td style="padding: 10px 8px">None known — stated</td><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px"><span class="chip t-more">None known</span></td></tr>
+<tr style="border-bottom: 1px solid #ECEEEA"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 500">Medications</th><td style="padding: 10px 8px">Amlodipine; OTC not asked</td><td style="padding: 10px 8px" class="mono">RxNorm 17767</td><td style="padding: 10px 8px"><span class="chip warn">Partial</span></td></tr>
+<tr style="border-bottom: 1px solid #ECEEEA"><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 500">Exam</th><td style="padding: 10px 8px">Crackles, right base; leg exam not recorded</td><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px"><span class="chip warn">Partial</span></td></tr>
+<tr><th scope="row" style="padding: 10px 16px; text-align: left; font-weight: 500">eGFR · LFTs</th><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px">—</td><td style="padding: 10px 8px"><span class="chip t-less">Not recorded</span></td></tr>
+</tbody>
+</table>
+</div>
+<button class="btn" style="align-self: flex-start">Edit inputs</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isSource }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 14px">
+<button class="btn" onClick="{{ back }}" style="align-self: flex-start; min-height: 36px; font-size: 13px; border-color: transparent; padding: 0 8px; color: #0E5C56">← Back to {{ backLabel }}</button>
+<div style="display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center">
+<h2 style="margin: 0; font-size: 20px; font-weight: 600">Source</h2>
+<span class="cite" style="margin: 0; cursor: default; font-size: 12px">{{ src.key }}</span>
+<span class="chip ver">{{ src.type }}</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #DDE1DC; border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
+<span class="lbl">Claim</span>
+<p style="margin: -8px 0 0; font-size: 16px; font-weight: 500">{{ src.claim }}</p>
+<div style="background: #F5F6F3; border-radius: 8px; padding: 12px 14px; font-size: 14px; color: #2E3633; font-style: italic">“[Excerpt the verifier matched to this claim]”</div>
+<dl style="margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px; font-size: 13px">
+<dt style="color: #55605B">Source</dt><dd style="margin: 0">{{ src.title }}</dd>
+<dt style="color: #55605B">Identifier</dt><dd style="margin: 0" class="mono">{{ src.id }}</dd>
+<dt style="color: #55605B">Read</dt><dd style="margin: 0">{{ src.access }}</dd>
+<dt style="color: #55605B">Support</dt><dd style="margin: 0">{{ src.support }}</dd>
+<dt style="color: #55605B">Retractions</dt><dd style="margin: 0">{{ src.retract }}</dd>
+<dt style="color: #55605B">Retrieved</dt><dd style="margin: 0">29 Oct 2026 · de-identified query</dd>
+</dl>
+<a href="#" class="btn" style="align-self: flex-start">Open original</a>
+</div>
+</div>
+</sc-if>
+</aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1150}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { tab: 'diff', marked: false, src: 'O1', back: 'diff' };
+}
+renderVals() {
+const s = this.state;
+const go = (id) => () => this.setState({ tab: id });
+const labels = { inputs: 'Inputs', diff: 'Differential', tests: 'Tests', tx: 'Treatment' };
+const sources = {
+O1: { title: 'Cohort, travel and venous thromboembolism · [Journal, Year]', id: 'PMID [—] · DOI [—]', type: 'Observational', access: 'Abstract only', claim: 'An 11 h flight 6 days ago supports pulmonary embolism', support: 'Supported by retrieved abstract', retract: 'None found · Crossref, 09:44' },
+G1: { title: 'ESC guideline, acute pulmonary embolism, [version, date]', id: 'Guideline [name · version · date]', type: 'Guideline', access: 'Full text', claim: 'HR 104 and SpO₂ 93% are consistent with pulmonary embolism', support: 'Supported by retrieved full text', retract: 'Current version checked, 09:44' },
+SR1: { title: 'Systematic review, clinical features of CAP · [Journal, Year]', id: 'PMID [—] · DOI [—]', type: 'Systematic review', access: 'Abstract only', claim: 'Fever with productive cough and focal crackles point toward pneumonia', support: 'Supported by retrieved abstract', retract: 'None found · Crossref, 09:44' },
+G2: { title: 'ATS/IDSA guideline, community-acquired pneumonia, [version, date]', id: 'Guideline [name · version · date]', type: 'Guideline', access: 'Full text', claim: 'Listed as an outpatient treatment option', support: 'Supported by retrieved full text', retract: 'Current version checked, 09:44' },
+L1: { title: 'Doxycycline drug label', id: 'DailyMed set ID [—]', type: 'Drug label', access: 'Full text', claim: 'Label dosing and warnings', support: 'Supported by retrieved label', retract: 'Not applicable · label revision [—]' },
+L2: { title: 'Azithromycin drug label', id: 'DailyMed set ID [—]', type: 'Drug label', access: 'Full text', claim: 'Label carries a QT prolongation warning', support: 'Supported by retrieved label', retract: 'Not applicable · label revision [—]' },
+DB: { title: '[Interaction DB — licence open]', id: 'Entry [—] · version [—]', type: 'Curated database', access: 'Database entry', claim: 'Amoxicillin conflicts with a recorded penicillin allergy', support: 'Deterministic rule fired; the model only explains it', retract: 'Not applicable · database version [—]' }
+};
+const c = {};
+Object.keys(sources).forEach((k) => {
+c[k] = () => this.setState({ tab: 'source', src: k, back: s.tab === 'source' ? s.back : s.tab });
+});
+return {
+tabs: ['inputs', 'diff', 'tests', 'tx'].map((id) => {
+const locked = id === 'tx' && !s.marked;
+return { label: labels[id], active: s.tab === id, idle: s.tab !== id && !locked, locked, pick: go(id) };
+}),
+isInputs: s.tab === 'inputs',
+isDiff: s.tab === 'diff',
+isTests: s.tab === 'tests',
+isTx: s.tab === 'tx',
+isSource: s.tab === 'source',
+marked: s.marked,
+unmarked: !s.marked,
+c,
+src: { key: s.src, ...sources[s.src] },
+backLabel: labels[s.back],
+back: go(s.back),
+openInputs: go('inputs'),
+openDiff: go('diff'),
+openTests: go('tests'),
+openTx: go('tx'),
+mark: () => this.setState({ marked: true, tab: 'tx' }),
+undo: () => this.setState({ marked: false, tab: s.tab === 'tx' ? 'diff' : s.tab })
+};
+}
+}
+</script>
+</body>
+</html>

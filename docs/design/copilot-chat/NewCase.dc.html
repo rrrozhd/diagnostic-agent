@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Copilot · New case</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F5F6F3}
+a{color:#0E5C56}a:hover{color:#08403C}
+.lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#55605B;font-weight:600}
+.case{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:8px;text-decoration:none;color:#15201D;min-height:44px;box-sizing:border-box}
+.case:hover{background:#ECEFEB;color:#15201D}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:8px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;background:#FFFFFF;color:#15201D;border:1px solid #C9CFC9;text-decoration:none}
+.btn:hover{border-color:#6B746F;color:#15201D}
+.pri{background:#0E5C56;color:#FFFFFF;border-color:#0E5C56}
+.pri:hover{background:#08403C;color:#FFFFFF}
+.hint{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:6px 12px;border-radius:999px;border:1px dashed #6B746F;color:#2E3633;background:#FFFFFF}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:760px){.side{max-width:none!important;border-right:0!important;border-bottom:1px solid #DDE1DC}.side .find,.side .me,.cases .lbl{display:none!important}.cases{flex-direction:row!important;overflow-x:auto;gap:8px!important}.cases .case{flex:none;width:210px;border:1px solid #DDE1DC}}
+</style>
+</helmet>
+<div class="app" style="min-height: 100vh; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #15201D; background: #F5F6F3; font-size: 15px; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: stretch">
+
+<nav aria-label="Cases" class="side" style="flex: 1 1 260px; max-width: 300px; min-width: 0; background: #FAFBF9; border-right: 1px solid #DDE1DC; padding: 16px 12px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 4px">
+<svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="#0E5C56" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="24" height="24" rx="7"></rect><path d="M14 8v12M8 14h12"></path></svg>
+<span style="font-weight: 700; font-size: 17px">Copilot</span>
+</div>
+<a href="NewCase.dc.html" class="btn pri" style="justify-content: flex-start">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New case</a>
+<label for="find" class="vh find">Search cases</label>
+<input id="find" class="find" type="search" placeholder="Search cases" style="font: inherit; font-size: 14px; min-height: 44px; box-sizing: border-box; padding: 0 12px; border: 1px solid #DDE1DC; border-radius: 8px; background: #FFFFFF">
+<div class="cases" style="display: flex; flex-direction: column; gap: 2px">
+<span class="lbl" style="padding: 4px 12px">Today</span>
+<a class="case" href="NewCase.dc.html" aria-current="page" style="background: #FFFFFF; box-shadow: inset 0 0 0 1px #DDE1DC"><span style="font-weight: 600; font-size: 14px">New case</span><span style="font-size: 12px; color: #3F4743">Not started</span></a>
+<a class="case" href="Main.dc.html"><span style="font-weight: 500; font-size: 14px">58 F · pleuritic chest pain</span><span style="font-size: 12px; color: #8A3409; font-weight: 600">2 can&#39;t-miss open</span></a>
+<a class="case" href="#"><span style="font-weight: 500; font-size: 14px">71 M · confusion, fever</span><span style="font-size: 12px; color: #8A3409; font-weight: 600">1 can&#39;t-miss open</span></a>
+<a class="case" href="#"><span style="font-weight: 500; font-size: 14px">34 F · palpitations</span><span style="font-size: 12px; color: #3F4743">Inputs only · not run</span></a>
+<span class="lbl" style="padding: 12px 12px 4px">Yesterday</span>
+<a class="case" href="#"><span style="font-weight: 500; font-size: 14px">66 M · back pain, weight loss</span><span style="font-size: 12px; color: #3F4743">Differential · 3 sources</span></a>
+<a class="case" href="#"><span style="font-weight: 500; font-size: 14px">45 F · rash after new drug</span><span style="font-size: 12px; color: #3F4743">Treatment · 1 allergy flag</span></a>
+</div>
+<div class="me" style="margin-top: auto; padding: 12px 8px 0; border-top: 1px solid #DDE1DC; font-size: 12px; color: #55605B; display: flex; flex-direction: column; gap: 2px">
+<span style="color: #15201D; font-size: 14px">Dr [NAME]</span>
+<span>Decision support · not a diagnosis</span>
+</div>
+</nav>
+
+<section aria-label="New case" style="flex: 999 1 460px; min-width: 0; display: flex; flex-direction: column; justify-content: center; background: #FFFFFF; border-right: 1px solid #DDE1DC; padding: 48px 32px; box-sizing: border-box">
+<div style="max-width: 620px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 20px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-size: 28px; line-height: 1.2; font-weight: 600">Start a case</h1>
+<p style="margin: 0; color: #3F4743">Paste your note or type it as you would in the chart. The copilot shows what it understood before it researches anything.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; border: 1px solid #C9CFC9; border-radius: 12px; padding: 12px 12px 12px 16px">
+<label for="note" class="vh">Case note</label>
+<textarea id="note" rows="6" placeholder="Age, sex, presenting symptoms, history, allergies with reaction, current medications…" style="font: inherit; font-size: 15px; border: 0; resize: vertical; outline: none; padding: 4px 0; background: transparent"></textarea>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between">
+<button class="btn" style="border-color: transparent; padding: 0 10px; font-weight: 500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 12l-8 8a5 5 0 0 1-7-7l8-8a3 3 0 0 1 4 4l-8 8a1 1 0 0 1-1-1l7-7"></path></svg>Attach results</button>
+<button class="btn pri">Read note</button>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="lbl">What changes the output most</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span class="hint">Current medications, incl. OTC</span>
+<span class="hint">Allergies with reaction</span>
+<span class="hint">Vitals and exam</span>
+<span class="hint">eGFR, LFTs, weight</span>
+<span class="hint">Pregnancy status</span>
+<span class="hint">Tests already done</span>
+</div>
+<p style="margin: 0; font-size: 13px; color: #3F4743">Anything you leave out is marked “not recorded”, never read as “none”.</p>
+</div>
+</div>
+</section>
+
+<aside aria-label="Research artifacts" style="flex: 999 1 520px; min-width: 0; background: #F5F6F3; padding: 48px 32px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center">
+<div style="max-width: 460px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-size: 18px; font-weight: 600">Research appears here, one artifact per step</h2>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px">
+<li style="display: flex; gap: 14px; align-items: flex-start; background: #FFFFFF; border: 1px dashed #C9CFC9; border-radius: 10px; padding: 14px 16px"><span style="font-weight: 700; color: #0E5C56; width: 18px">1</span><span style="display: flex; flex-direction: column"><span style="font-weight: 600">Inputs</span><span style="font-size: 13px; color: #3F4743">What it understood, with codes you can correct</span></span></li>
+<li style="display: flex; gap: 14px; align-items: flex-start; background: #FFFFFF; border: 1px dashed #C9CFC9; border-radius: 10px; padding: 14px 16px"><span style="font-weight: 700; color: #0E5C56; width: 18px">2</span><span style="display: flex; flex-direction: column"><span style="font-weight: 600">Differential</span><span style="font-size: 13px; color: #3F4743">Can&#39;t-miss first, then tiers; every claim cited</span></span></li>
+<li style="display: flex; gap: 14px; align-items: flex-start; background: #FFFFFF; border: 1px dashed #C9CFC9; border-radius: 10px; padding: 14px 16px"><span style="font-weight: 700; color: #0E5C56; width: 18px">3</span><span style="display: flex; flex-direction: column"><span style="font-weight: 600">Discriminating tests</span><span style="font-size: 13px; color: #3F4743">Which tests would most change the likelihood</span></span></li>
+<li style="display: flex; gap: 14px; align-items: flex-start; background: #FFFFFF; border: 1px dashed #C9CFC9; border-radius: 10px; padding: 14px 16px"><span style="font-weight: 700; color: #6B746F; width: 18px">4</span><span style="display: flex; flex-direction: column"><span style="font-weight: 600; display: inline-flex; gap: 6px; align-items: center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Treatment</span><span style="font-size: 13px; color: #3F4743">Runs only for the working diagnosis you mark</span></span></li>
+</ol>
+<p style="margin: 0; font-size: 12px; color: #55605B">Name, date of birth and record number are removed before any query leaves the boundary.</p>
+</div>
+</aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
