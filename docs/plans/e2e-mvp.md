@@ -19,6 +19,17 @@
 - `scripts/e2e.py`: drives both turns over HTTP, writes one JSON transcript
   per run (inputs, outputs, cost, trace id).
 
+## Primary scenario (2026-10-29)
+
+`cap-penicillin` (58M, lobar pneumonia picture, penicillin anaphylaxis) is the
+primary working scenario. Live run `evals/e2e_runs/20261029T210303Z/`:
+turn 1 returned 8 sourced candidates (pneumococcal CAP more likely; Legionella,
+PE with infarction, empyema, post-obstructive cancer, ACS, TB, post-influenza
+S. aureus flagged can't-miss), 20 model calls, $1.05, 171 s. Its only check
+failure was a banned-phrase false positive ("laboratory-confirmed"), since fixed.
+Turn 2 (treatment) was not reached: OpenRouter credits ran out (402).
+`thyrotoxicosis-coc` stays in the case file as a secondary, not yet run.
+
 ## Acceptance
 
 1. `uv run pytest` passes with a nonzero count, including both graph branches
