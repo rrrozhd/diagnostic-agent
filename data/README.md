@@ -24,8 +24,9 @@ guideline or paper.
 `make seed` (= `uv run python data/seed.py`, ~90 s) loads everything above into one
 gitignored SQLite file and fails if any table comes out empty or a known entry is missing.
 Table and column notes are SQL comments in the schema:
-`SELECT sql FROM sqlite_master WHERE type = 'table'`. Open it read-only:
-`sqlite3.connect("file:data/reference.db?mode=ro", uri=True)`.
+`SELECT sql FROM sqlite_master WHERE type = 'table'`. The agent reads it through the
+`query_reference_db` tool in `app/tools.py` (read-only, SELECT only, capped rows/time/size;
+limits in `app/config.py`).
 
 | Table | Rows | Join keys |
 |---|---|---|
